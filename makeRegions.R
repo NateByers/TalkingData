@@ -7,6 +7,13 @@ makeRegions <- function(events_data){
     box_bottom <- events_data$latitude > row[["lat_bottom"]]
     events_data[[row[["region"]]]] <<- box_left & box_right & box_top & box_bottom
   })
+  
+  events_data$region <- NA
+  for(i in regions$region){
+      events_data[events_data[, i], "region"] <- i
+      events_data <- events_data[, names(events_data)[names(events_data) != i]]
+  }
+  
   events_data
 }
                         
