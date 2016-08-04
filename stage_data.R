@@ -42,8 +42,36 @@ long_left <- full_data$longitude > 70.67096
 long_right <- full_data$longitude < 149.272235
 lat_bottom <- full_data$latitude > 18.442542
 lat_top <- full_data$latitude < 55.421728
+full_data$Southeast_Asia <- long_left & long_right & lat_bottom & lat_top
 
-save(full_data, file = "C:/Repositories/TalkingData/data/prepped_data.rda")
+full_data <- full_data %>%
+  filter(Southeast_Asia)
+
+map_data <- full_data %>%
+  filter(!is.na(region)) 
+
+map_summary <- map_data %>%
+  group_by(region) %>%
+  summarize(events = length(event_id),
+            devices = length(unique(device_id))) %>%
+  left_join(data.frame(region = unique(map_data$region)[order(unique(map_data$region))], 
+                       longitude = c(116.4074, 104.0668, 114.1095, 121.4737),
+                       latitude = c(39.9042, 30.5728, 22.3964, 31.2304),
+                       radius = c(10, 7, 13, 15),
+                       stringsAsFactors = FALSE))
+
+city_names <- paste0("<b><a href='https://en.wikipedia.org/wiki/",
+                     gsub(" ", "_", map_summary$region),
+                     "'>",
+                     map_summary$region,
+                     "</a></b>")
+number_events <- paste0(map_summary$events, " events on") 
+number_devices <- paste0(map_summary$devices, " devices")
+overview_content <- paste(sep = "<br/>", city_names, number_events,
+                          number_devices)
+
+save(full_data, map_summary, overview_content, file = "C:/Repositories/TalkingData/data/prepped_data.rda")
 file.copy("C:/Repositories/TalkingData/data/prepped_data.rda",
-          "C:/Repositories/TalkingData_Explorer/data/prepped_data.rda")
+          "C:/Repositories/TalkingData_Explorer/data/prepped_data.rda",
+          overwrite = TRUE)
 
