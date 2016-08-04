@@ -1,5 +1,5 @@
-makeRegions <- function(events_data){
-  regions <- read.csv("C:/Repositories/TalkingData/data/regions.csv", stringsAsFactors = FALSE)
+makeRegions <- function(events_data, folder){
+  regions <- read.csv(paste0(folder, "data/regions.csv"), stringsAsFactors = FALSE)
   apply(regions, 1, function(row){
     box_left <- events_data$longitude > row[["long_left"]]
     box_right <- events_data$longitude < row[["long_right"]]

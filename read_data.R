@@ -1,15 +1,16 @@
 library(dplyr)
 library(tidyr)
-source("C:/Repositories/TalkingData/makeRegions.R")
-source("C:/Repositories/TalkingData/generalizeCategories.R")
-app_events <- read.csv("C:/Repositories/TalkingData/data/app_events.csv",
+directory <- "D:/Repositories/TalkingData/"
+source(paste0(directory, "makeRegions.R"))
+source(paste0(directory, "generalizeCategories.R"))
+app_events <- read.csv(paste0(directory, "data/app_events.csv"),
                        stringsAsFactors = FALSE) %>%
   filter(is_installed == 1, is_active == 1)
-app_labels <- read.csv("C:/Repositories/TalkingData/data/app_labels.csv",
+app_labels <- read.csv(paste0(directory, "data/app_labels.csv"),
                        stringsAsFactors = FALSE) 
-events <- read.csv("C:/Repositories/TalkingData/data/events.csv",
+events <- read.csv(paste0(directory, "data/events.csv"),
                    stringsAsFactors = FALSE)  %>%
-  makeRegions() %>%
+  makeRegions(directory) %>%
   mutate(date = as.Date(timestamp),
          hour = as.numeric(substr(timestamp, 12, 13)),
          morning = hour > 5 & hour < 12,
@@ -21,22 +22,29 @@ for(i in c("morning", "midday", "evening", "night")){
   events[events[, i], "time"] <- i
   events <- events[, names(events)[names(events) != i]]
 }
-gender_age_test <- read.csv("C:/Repositories/TalkingData/data/gender_age_test.csv",
+gender_age_test <- read.csv(paste0(directory, "data/gender_age_test.csv"),
                             stringsAsFactors = FALSE) 
-gender_age_train <- read.csv("C:/Repositories/TalkingData/data/gender_age_train.csv",
+gender_age_train <- read.csv(paste0(directory, "data/gender_age_train.csv"),
                              stringsAsFactors = FALSE) 
-label_categories <- read.csv("C:/Repositories/TalkingData/data/label_categories.csv",
+label_categories <- read.csv(paste0(directory, "data/label_categories.csv"),
                              stringsAsFactors = FALSE) %>%
   filter(grepl("\\S", category)) %>%
   filter(category != "unknown") %>%
   generalizeCategories()
-sample_submission <- read.csv("C:/Repositories/TalkingData/data/sample_submission.csv",
+sample_submission <- read.csv(paste0(directory, "data/sample_submission.csv"),
                               stringsAsFactors = FALSE) 
 
-phone_brand_device_model <- read.csv("C:/Repositories/TalkingData/data/phone_brand_device_model.csv",
+phone_brand_device_model <- read.csv(paste0(directory, "data/phone_brand_device_model.csv"),
                                      encoding = "UTF-8", stringsAsFactors = FALSE) 
 names(phone_brand_device_model)[1] <- "device_id"
 
+rows <- sapply(list(app_events, app_labels, events, gender_age_test, gender_age_train,
+                    phone_brand_device_model), function(x) dim(x)[1])
+
+table_dimensions <- data.frame(Table = c("app_events", "app_labels", "events", 
+                                         "gender_age_test", "gender_age_train",
+                                         "phone_brand_device_model"),
+                               Records = format(rows, big.mark=",", trim=TRUE))
 
 app_labels <- semi_join(app_labels, label_categories)
 app_events <- semi_join(app_events, app_labels)
@@ -46,9 +54,6 @@ gender_age_train <- semi_join(gender_age_train, events)
 gender_age_test <- semi_join(gender_age_test, events)
 
 
-save(app_events, app_labels, events, gender_age_train,
-     label_categories, phone_brand_device_model,
-     file = "C:/Repositories/TalkingData/data/data.rda")
-file.copy("C:/Repositories/TalkingData/data/shiny_data.rda",
-          "C:/Repositories/TalkingData_Explorer/data/shiny_data.rda",
-          overwrite = TRUE)
+save(app_events, app_labels, events, gender_age_train, gender_age_test,
+     label_categories, phone_brand_device_model, table_dimensions,
+     file = paste0(directory, "data/data.rda"))

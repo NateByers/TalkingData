@@ -1,0 +1,75 @@
+---
+title: 'TalkingData Mobile User Demographics'
+output: 
+  html_document:
+    toc: yes
+    toc_depth: 2
+    toc_float: yes
+---
+
+This project uses data from the [TalkingData Mobile User Demographics](https://www.kaggle.com/c/talkingdata-mobile-user-demographics) Kaggle 
+competition. 
+
+TalkingData is a Chinese based mobile data platform. From the competition site:
+
+>In this competition, Kagglers are challenged to build a model predicting users’ 
+>demographic characteristics based on their app usage, geolocation, and mobile 
+>device properties. Doing so will help millions of developers and brand 
+>advertisers around the world pursue data-driven marketing efforts which are 
+>relevant to their users and catered to their preferences.
+
+# The Data
+
+The data for the competition can be downloaded here: https://www.kaggle.com/c/talkingdata-mobile-user-demographics/data .
+
+I have downloaded and read each file into R, giving each `data.frame` the same 
+name as the file. Below are the first 3 records of each file.
+
+```{r, echo=FALSE, cache=TRUE}
+load("data/data.rda")
+```
+
+```{r}
+head(app_events, 3)
+head(app_labels, 3)
+head(events, 3)
+head(gender_age_test, 3)
+head(gender_age_train, 3)
+head(phone_brand_device_model, 3) # Chinese characters displayed in UTF-8 codes
+```
+
+<br><br>
+
+The number of records in each `data.frame` can be seen in the table below.
+
+<br><br>
+
+```{r, echo = FALSE, results='asis'}
+library(printr)
+table_dimensions
+```
+
+<br><br>
+
+And below is the data schema provided on the Kaggle site.
+
+<br><br>
+
+![](img/schema.png)
+
+<br><br>
+
+# Tidy Data
+
+For our purpose, it is more convenient to look at the data in one nice "tidy"
+table. 
+
+# Data Exploration
+
+Visualizing the data and looking at relationships.
+
+# Model Building
+
+# Testing
+
+# Prediction

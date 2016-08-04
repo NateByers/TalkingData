@@ -1,0 +1,15 @@
+name: "TalkingData"
+output_dir: "."
+navbar:
+  title: "TalkingData Project"
+  type: inverse
+  left:
+    - text: "Documentation"
+      icon: fa-home
+      href: index.html
+  right:
+    - icon: fa-github fa-lg
+      href: https://github.com/NateByers/TalkingData
+output:
+  html_document:
+    theme: yeti

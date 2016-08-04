@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>TalkingData Mobile User Demographics</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="site_libs/highlight/default.css"
+      type="text/css" />
+<script src="site_libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 45px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+
+.section h2 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h3 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h4 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h5 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h6 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.9em;
+  padding-left: 5px;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">TalkingData Project</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa-home"></span>
+     
+    Documentation
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/NateByers/TalkingData">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">TalkingData Mobile User Demographics</h1>
+
+</div>
+
+
+<p>This project uses data from the <a href="https://www.kaggle.com/c/talkingdata-mobile-user-demographics">TalkingData Mobile User Demographics</a> Kaggle competition.</p>
+<p>TalkingData is a Chinese based mobile data platform. From the competition site:</p>
+<blockquote>
+<p>In this competition, Kagglers are challenged to build a model predicting users’ demographic characteristics based on their app usage, geolocation, and mobile device properties. Doing so will help millions of developers and brand advertisers around the world pursue data-driven marketing efforts which are relevant to their users and catered to their preferences.</p>
+</blockquote>
+<div id="the-data" class="section level1">
+<h1>The Data</h1>
+<p>The data for the competition can be downloaded here: <a href="https://www.kaggle.com/c/talkingdata-mobile-user-demographics/data" class="uri">https://www.kaggle.com/c/talkingdata-mobile-user-demographics/data</a> .</p>
+<p>I have downloaded and read each file into R, giving each <code>data.frame</code> the same name as the file. Below are the first 3 records of each file.</p>
+<pre class="r"><code>head(app_events, 3)</code></pre>
+<pre><code>##   event_id       app_id is_installed is_active
+## 1  1924946 3.489720e+18            1         1
+## 2    19620 7.723979e+18            1         1
+## 3    53629 7.723979e+18            1         1</code></pre>
+<pre class="r"><code>head(app_labels, 3)</code></pre>
+<pre><code>##          app_id label_id
+## 1 -2.600988e+18        2
+## 2 -2.600988e+18        4
+## 3  4.214070e+18        5</code></pre>
+<pre class="r"><code>head(events, 3)</code></pre>
+<pre><code>##   event_id     device_id           timestamp longitude latitude region
+## 1  1924946 -7.013555e+18 2016-05-06 07:39:53    109.46    21.89   &lt;NA&gt;
+## 2    19620  8.427965e+18 2016-05-07 17:38:53    117.35    25.34   &lt;NA&gt;
+## 3    53629 -6.506152e+18 2016-05-03 18:55:04      0.00     0.00   &lt;NA&gt;
+##         date hour    time
+## 1 2016-05-06    7 morning
+## 2 2016-05-07   17  midday
+## 3 2016-05-03   18 evening</code></pre>
+<pre class="r"><code>head(gender_age_test, 3)</code></pre>
+<pre><code>##       device_id
+## 1  1.186608e+18
+## 2  1.186608e+18
+## 3 -7.231332e+17</code></pre>
+<pre class="r"><code>head(gender_age_train, 3)</code></pre>
+<pre><code>##       device_id gender age  group
+## 1  8.427965e+18      F  23   F23-
+## 2 -3.293695e+18      M  40   M39+
+## 3  7.104535e+18      M  25 M23-26</code></pre>
+<pre class="r"><code>head(phone_brand_device_model, 3) # Chinese characters displayed in UTF-8 codes</code></pre>
+<pre><code>##      device_id      phone_brand      device_model
+## 1 8.427965e+18             vivo               X5M
+## 2 1.186608e+18 &lt;U+5C0F&gt;&lt;U+7C73&gt; &lt;U+7EA2&gt;&lt;U+7C73&gt;2
+## 3 1.186608e+18 &lt;U+5C0F&gt;&lt;U+7C73&gt;  &lt;U+7EA2&gt;&lt;U+7C73&gt;</code></pre>
+<p><br><br></p>
+<p>The number of records in each <code>data.frame</code> can be seen in the table below.</p>
+<p><br><br></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Table</th>
+<th align="left">Records</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">app_events</td>
+<td align="left">12,732,996</td>
+</tr>
+<tr class="even">
+<td align="left">app_labels</td>
+<td align="left">459,943</td>
+</tr>
+<tr class="odd">
+<td align="left">events</td>
+<td align="left">3,252,950</td>
+</tr>
+<tr class="even">
+<td align="left">gender_age_test</td>
+<td align="left">112,071</td>
+</tr>
+<tr class="odd">
+<td align="left">gender_age_train</td>
+<td align="left">74,645</td>
+</tr>
+<tr class="even">
+<td align="left">phone_brand_device_model</td>
+<td align="left">187,245</td>
+</tr>
+</tbody>
+</table>
+<p>And below is the data schema provided on the Kaggle site.</p>
+<p><br><br></p>
+<div class="figure">
+<img src="img/schema.png" />
+
+</div>
+<p><br><br></p>
+</div>
+<div id="tidy-data" class="section level1">
+<h1>Tidy Data</h1>
+<p>How I make a tidy data set.</p>
+</div>
+<div id="data-exploration" class="section level1">
+<h1>Data Exploration</h1>
+<p>Visualizing the data and looking at relationships.</p>
+</div>
+<div id="model-building" class="section level1">
+<h1>Model Building</h1>
+</div>
+<div id="testing" class="section level1">
+<h1>Testing</h1>
+</div>
+<div id="prediction" class="section level1">
+<h1>Prediction</h1>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
