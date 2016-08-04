@@ -61,8 +61,11 @@ And below is the data schema provided on the Kaggle site.
 
 # Tidy Data
 
-For our purpose, it is more convenient to look at the data in one nice "tidy"
-table. 
+For our purpose, it is more convenient to look at the data in one nice "tidy" table. I have joined the tables and created some new columns that help make 
+sense of the data. You can see the data by clicking on "Data Table" in the 
+banner above.
+
+
 
 # Data Exploration
 

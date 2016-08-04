@@ -1,6 +1,8 @@
 library(dplyr)
 library(tidyr)
-load("C:/Repositories/TalkingData/data/data.rda")
+directory <- "D:/Repositories/TalkingData/"
+explorer <- "D:/Repositories/TalkingData_Explorer/data/prepped_data.rda"
+load(paste0(directory, "data/data.rda"))
 
 full_events <- events %>%
   inner_join(gender_age_train) %>%
@@ -70,8 +72,8 @@ number_devices <- paste0(map_summary$devices, " devices")
 overview_content <- paste(sep = "<br/>", city_names, number_events,
                           number_devices)
 
-save(full_data, map_summary, overview_content, file = "C:/Repositories/TalkingData/data/prepped_data.rda")
-file.copy("C:/Repositories/TalkingData/data/prepped_data.rda",
-          "C:/Repositories/TalkingData_Explorer/data/prepped_data.rda",
-          overwrite = TRUE)
+save(full_data, map_summary, overview_content, 
+     file = paste0(directory, "data/prepped_data.rda"))
+file.copy(paste0(directory, "data/prepped_data.rda"),
+          explorer, overwrite = TRUE)
 
