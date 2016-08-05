@@ -401,11 +401,58 @@ div.tocify {
 </div>
 <div id="tidy-data" class="section level1">
 <h1>Tidy Data</h1>
-<p>For our purpose, it is more convenient to look at the data in one nice “tidy” table.</p>
+<p>For our purpose, it is more convenient to look at the data in one nice “tidy” table. I have joined the tables and created some new columns that help make sense of the data. You can see the data by clicking on “Data Table” in the banner above. Below is a data dictionary.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Fields</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">event_id</td>
+<td align="left">Unique mobile event identifier. The primary key for this table.</td>
+</tr>
+<tr class="even">
+<td align="left">device_id</td>
+<td align="left">The mobile device identifier. Demographics are associated with this number.</td>
+</tr>
+<tr class="odd">
+<td align="left">longitude; latitude</td>
+<td align="left">Geolocation</td>
+</tr>
+<tr class="even">
+<td align="left">region</td>
+<td align="left">Feature generated from the data. Most events in china take place in three cities: Beijing, Chengdu, Hong Kong, and Shanghai.</td>
+</tr>
+<tr class="odd">
+<td align="left">date; hour; time</td>
+<td align="left">Time</td>
+</tr>
+<tr class="even">
+<td align="left">gender; age</td>
+<td align="left">Demographics</td>
+</tr>
+<tr class="odd">
+<td align="left">phone_brand; device_model</td>
+<td align="left">Mobile device brand information.</td>
+</tr>
+<tr class="even">
+<td align="left">apps</td>
+<td align="left">Feature generated from the data. The number of active apps during the event.</td>
+</tr>
+<tr class="odd">
+<td align="left">Custom; Education; etc.</td>
+<td align="left">These columns are also features generated from the data. These are categories of apps that are active during the event. A value of 1 means that at least 1 app from this category is active. See the file generalizeCategories.R in the GitHub repository for the R code that generated these features.</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="data-exploration" class="section level1">
 <h1>Data Exploration</h1>
-<p>Visualizing the data and looking at relationships.</p>
+<p><img src="index_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
 </div>
 <div id="model-building" class="section level1">
 <h1>Model Building</h1>

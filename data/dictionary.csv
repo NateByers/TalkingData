@@ -1,0 +1,10 @@
+Fields,Description
+event_id,Unique mobile event identifier. The primary key for this table.
+device_id,The mobile device identifier. Demographics are associated with this number.
+longitude; latitude,Geolocation
+region,"Feature generated from the data. Most events in china take place in three cities: Beijing, Chengdu, Hong Kong, and Shanghai."
+date; hour; time,Time
+gender; age,Demographics
+phone_brand; device_model,Mobile device brand information.
+apps,Feature generated from the data. The number of active apps during the event.
+Custom; Education; etc.,These columns are also features generated from the data. These are categories of apps that are active during the event. A value of 1 means that at least 1 app from this category is active. See the file generalizeCategories.R in the GitHub repository for the R code that generated these features.

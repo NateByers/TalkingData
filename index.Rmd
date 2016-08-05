@@ -63,13 +63,36 @@ And below is the data schema provided on the Kaggle site.
 
 For our purpose, it is more convenient to look at the data in one nice "tidy" table. I have joined the tables and created some new columns that help make 
 sense of the data. You can see the data by clicking on "Data Table" in the 
-banner above.
+banner above. Below is a data dictionary.
 
-
+```{r, echo=FALSE}
+read.csv("data/dictionary.csv")
+```
 
 # Data Exploration
 
-Visualizing the data and looking at relationships.
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+library(ggplot2)
+library(GGally)
+library(dplyr)
+load("data/prepped_data.rda")
+ggpairs(
+  select(full_data, age, gender),
+  mapping = ggplot2::aes(color = gender),
+  title = "Demographics"
+)
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+d <- full_data %>%
+  group_by(gender, phone_brand) %>%
+  summarize(count = n())
+ggplot(d, aes(phone_brand, count, fill = phone_brand)) +
+      geom_bar(stat = "identity") +
+      facet_grid(gender ~ .) +
+      theme(legend.position = "none", axis.text.x=element_text(angle=90),
+            axis.title.x=element_blank()) 
+```
 
 # Model Building
 

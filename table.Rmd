@@ -3,13 +3,17 @@ title: "Tidy Data Set"
 output: html_document
 ---
 
-
+Below is the data set described in the "Tidy Data" section of the documenation. See the `stage_data.R` script in the 
+[GitHub repository](https://github.com/NateByers/TalkingData) for the R code
+that created this table. The table contains a random sample of 1,000 records 
+from a table with 192,001 records.
 
 ```{r, chache=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
 library(dplyr)
 load("data/prepped_data.rda")
 d <- full_data[sample(row.names(full_data), 1000), ] %>%
   select(event_id, device_id, longitude:age, phone_brand:Other)
+  
 library(DT)
 datatable(d, rownames = FALSE)
 ```
