@@ -4,3 +4,6 @@ GGally
 ggplot2
 dplyr
 rmarkdown
+printr
+plotly
+tidyr
