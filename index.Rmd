@@ -25,7 +25,7 @@ The data for the competition can be downloaded here: https://www.kaggle.com/c/ta
 I have downloaded and read each file into R, giving each `data.frame` the same 
 name as the file. Below are the first 3 records of each file.
 
-```{r, echo=FALSE, cache=TRUE}
+```{r, echo=FALSE, cache=FALSE}
 load("data/data.rda")
 ```
 
@@ -33,7 +33,6 @@ load("data/data.rda")
 head(app_events, 3)
 head(app_labels, 3)
 head(events, 3)
-head(gender_age_test, 3)
 head(gender_age_train, 3)
 head(phone_brand_device_model, 3) # Chinese characters displayed in UTF-8 codes
 ```
@@ -69,33 +68,115 @@ banner above. Below is a data dictionary.
 read.csv("data/dictionary.csv")
 ```
 
+__Note__: The Chinese characters for the phone brand and device model 
+are rendered as their UTF-8 code or sometimes not at all. 
+
 # Data Exploration
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+The tidy data set can be visualized using the TalkingData Explorer found here: 
+https://natebyers.shinyapps.io/TalkingData_Explorer/ .
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=FALSE}
 library(ggplot2)
 library(GGally)
 library(dplyr)
+library(plotly)
 load("data/prepped_data.rda")
-ggpairs(
+
+  ggpairs(
   select(full_data, age, gender),
   mapping = ggplot2::aes(color = gender),
-  title = "Demographics"
-)
+  title = "Demographics")
+
+
 ```
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 d <- full_data %>%
-  group_by(gender, phone_brand) %>%
-  summarize(count = n())
-ggplot(d, aes(phone_brand, count, fill = phone_brand)) +
-      geom_bar(stat = "identity") +
-      facet_grid(gender ~ .) +
-      theme(legend.position = "none", axis.text.x=element_text(angle=90),
+  group_by(phone_brand) %>%
+  summarize(count = n()) %>%
+  arrange(desc(count)) %>%
+  top_n(20)
+
+d <- semi_join(full_data, d)
+  
+d <- cbind(select(d, age, gender),
+           phone_brand = enc2utf8(d$phone_brand),
+           stringsAsFactors = FALSE)  
+
+  ggplot(d, aes(factor(phone_brand), age)) +
+      geom_boxplot(aes(fill = factor(gender))) +
+      theme(axis.text.x=element_text(angle=90),
             axis.title.x=element_blank()) 
+  
+
+
+
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyr)
+
+  
+ggplot(full_data, aes(factor(region), age)) +
+      geom_boxplot(aes(fill = factor(gender))) +
+      theme(axis.text.x=element_text(angle=90),
+            axis.title.x=element_blank()) 
+  
+
+
+
+```
+
+```{r, echo=FALSE}
+d <- full_data %>%
+  mutate(location = longitude*latitude) %>%
+  select(age, location, hour, Custom:Other)
+
+ggcorr(d, geom = "circle", nbreaks = 5)
 ```
 
 # Model Building
 
+```{r, warning=FALSE, message=FALSE}
+library(caret)
+for(i in names(full_data)){
+  if(class(full_data[[i]]) == "character"){
+    full_data[[i]] <- as.factor(full_data[[i]])
+  }
+}
+
+data_subset <- full_data %>%
+  arrange(gender) %>%
+  sample_n(1000)
+
+ctrl <- trainControl(method="repeatedcv", number=2, repeats=1, selectionFunction = "oneSE")
+in_train <- createDataPartition(data_subset$gender, p=.80, list=FALSE)
+
+
+
+rf <- train(gender ~ region + hour + phone_brand + device_model +
+              apps + Games + Education + Finance, 
+            data = data_subset, method = "rf",
+            metric = "Kappa", trControl = ctrl, subset = in_train)
+
+```
+
 # Testing
 
+```{r}
+test <- data_subset[-in_train,]
+test$pred_rf <- predict(rf, test, "raw")
+confusionMatrix(test$pred_rf, test$gender)
+```
+
 # Prediction
+
+```{r}
+
+prd <- data.frame(region = "Hong Kong", hour = 12, phone_brand = "vivo",
+                  device_model = "X5Max", apps = 4, Games = 1, Education = 1,
+                  Finance = 0)
+prediction <- predict(rf, prd)
+prediction
+```

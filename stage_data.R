@@ -52,6 +52,8 @@ full_data <- full_data %>%
 map_data <- full_data %>%
   filter(!is.na(region)) 
 
+full_data[is.na(full_data$region), "region"] <- "Rural"
+
 map_summary <- map_data %>%
   group_by(region) %>%
   summarize(events = length(event_id),

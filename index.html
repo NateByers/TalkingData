@@ -338,11 +338,6 @@ div.tocify {
 ## 1 2016-05-06    7 morning
 ## 2 2016-05-07   17  midday
 ## 3 2016-05-03   18 evening</code></pre>
-<pre class="r"><code>head(gender_age_test, 3)</code></pre>
-<pre><code>##       device_id
-## 1  1.186608e+18
-## 2  1.186608e+18
-## 3 -7.231332e+17</code></pre>
 <pre class="r"><code>head(gender_age_train, 3)</code></pre>
 <pre><code>##       device_id gender age  group
 ## 1  8.427965e+18      F  23   F23-
@@ -377,14 +372,10 @@ div.tocify {
 <td align="left">3,252,950</td>
 </tr>
 <tr class="even">
-<td align="left">gender_age_test</td>
-<td align="left">112,071</td>
-</tr>
-<tr class="odd">
 <td align="left">gender_age_train</td>
 <td align="left">74,645</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">phone_brand_device_model</td>
 <td align="left">187,245</td>
 </tr>
@@ -448,20 +439,80 @@ div.tocify {
 </tr>
 </tbody>
 </table>
+<p><strong>Note</strong>: The Chinese characters for the phone brand and device model are rendered as their UTF-8 code or sometimes not at all.</p>
 </div>
 <div id="data-exploration" class="section level1">
 <h1>Data Exploration</h1>
-<p><img src="index_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
-<p><img src="index_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
+<p>The tidy data set can be visualized using the TalkingData Explorer found here: <a href="https://natebyers.shinyapps.io/TalkingData_Explorer/" class="uri">https://natebyers.shinyapps.io/TalkingData_Explorer/</a> .</p>
+<p><img src="index_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
 </div>
 <div id="model-building" class="section level1">
 <h1>Model Building</h1>
+<pre class="r"><code>library(caret)
+for(i in names(full_data)){
+  if(class(full_data[[i]]) == &quot;character&quot;){
+    full_data[[i]] &lt;- as.factor(full_data[[i]])
+  }
+}
+
+data_subset &lt;- full_data %&gt;%
+  arrange(gender) %&gt;%
+  sample_n(1000)
+
+ctrl &lt;- trainControl(method=&quot;repeatedcv&quot;, number=2, repeats=1, selectionFunction = &quot;oneSE&quot;)
+in_train &lt;- createDataPartition(data_subset$gender, p=.80, list=FALSE)
+
+
+
+rf &lt;- train(gender ~ region + hour + phone_brand + device_model +
+              apps + Games + Education + Finance, 
+            data = data_subset, method = &quot;rf&quot;,
+            metric = &quot;Kappa&quot;, trControl = ctrl, subset = in_train)</code></pre>
 </div>
 <div id="testing" class="section level1">
 <h1>Testing</h1>
+<pre class="r"><code>test &lt;- data_subset[-in_train,]
+test$pred_rf &lt;- predict(rf, test, &quot;raw&quot;)
+confusionMatrix(test$pred_rf, test$gender)</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction   F   M
+##          F   7  16
+##          M  40 136
+##                                           
+##                Accuracy : 0.7186          
+##                  95% CI : (0.6506, 0.7799)
+##     No Information Rate : 0.7638          
+##     P-Value [Acc &gt; NIR] : 0.941311        
+##                                           
+##                   Kappa : 0.053           
+##  Mcnemar&#39;s Test P-Value : 0.002116        
+##                                           
+##             Sensitivity : 0.14894         
+##             Specificity : 0.89474         
+##          Pos Pred Value : 0.30435         
+##          Neg Pred Value : 0.77273         
+##              Prevalence : 0.23618         
+##          Detection Rate : 0.03518         
+##    Detection Prevalence : 0.11558         
+##       Balanced Accuracy : 0.52184         
+##                                           
+##        &#39;Positive&#39; Class : F               
+## </code></pre>
 </div>
 <div id="prediction" class="section level1">
 <h1>Prediction</h1>
+<pre class="r"><code>prd &lt;- data.frame(region = &quot;Hong Kong&quot;, hour = 12, phone_brand = &quot;vivo&quot;,
+                  device_model = &quot;X5Max&quot;, apps = 4, Games = 1, Education = 1,
+                  Finance = 0)
+prediction &lt;- predict(rf, prd)
+prediction</code></pre>
+<pre><code>## [1] M
+## Levels: F M</code></pre>
 </div>
 
 

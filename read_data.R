@@ -37,12 +37,15 @@ sample_submission <- read.csv(paste0(directory, "data/sample_submission.csv"),
 phone_brand_device_model <- read.csv(paste0(directory, "data/phone_brand_device_model.csv"),
                                      encoding = "UTF-8", stringsAsFactors = FALSE) 
 names(phone_brand_device_model)[1] <- "device_id"
+for(i in c("phone_brand", "device_model")){
+  phone_brand_device_model[[i]] <- enc2utf8(phone_brand_device_model[[i]])
+}
 
-rows <- sapply(list(app_events, app_labels, events, gender_age_test, gender_age_train,
+rows <- sapply(list(app_events, app_labels, events, gender_age_train,
                     phone_brand_device_model), function(x) dim(x)[1])
 
 table_dimensions <- data.frame(Table = c("app_events", "app_labels", "events", 
-                                         "gender_age_test", "gender_age_train",
+                                         "gender_age_train",
                                          "phone_brand_device_model"),
                                Records = format(rows, big.mark=",", trim=TRUE))
 
