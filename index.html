@@ -313,7 +313,7 @@ div.tocify {
 <p>This project uses data from the <a href="https://www.kaggle.com/c/talkingdata-mobile-user-demographics">TalkingData Mobile User Demographics</a> Kaggle competition.</p>
 <p>TalkingData is a Chinese based mobile data platform. From the competition site:</p>
 <blockquote>
-<p>In this competition, Kagglers are challenged to build a model predicting usersâ€™ demographic characteristics based on their app usage, geolocation, and mobile device properties. Doing so will help millions of developers and brand advertisers around the world pursue data-driven marketing efforts which are relevant to their users and catered to their preferences.</p>
+<p>In this competition, Kagglers are challenged to build a model predicting users’ demographic characteristics based on their app usage, geolocation, and mobile device properties. Doing so will help millions of developers and brand advertisers around the world pursue data-driven marketing efforts which are relevant to their users and catered to their preferences.</p>
 </blockquote>
 <div id="the-data" class="section level1">
 <h1>The Data</h1>
@@ -444,13 +444,14 @@ div.tocify {
 <div id="data-exploration" class="section level1">
 <h1>Data Exploration</h1>
 <p>The tidy data set can be visualized using the TalkingData Explorer found here: <a href="https://natebyers.shinyapps.io/TalkingData_Explorer/" class="uri">https://natebyers.shinyapps.io/TalkingData_Explorer/</a> .</p>
-<p><img src="index_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
-<p><img src="index_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
-<p><img src="index_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
-<p><img src="index_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
-<div id="model-building" class="section level1">
-<h1>Model Building</h1>
+<div id="prediction" class="section level1">
+<h1>Prediction</h1>
+<p>Random forest model for predicting gender.</p>
 <pre class="r"><code>library(caret)
 for(i in names(full_data)){
   if(class(full_data[[i]]) == &quot;character&quot;){
@@ -460,59 +461,86 @@ for(i in names(full_data)){
 
 data_subset &lt;- full_data %&gt;%
   arrange(gender) %&gt;%
-  sample_n(1000)
+  sample_n(2000)
 
 ctrl &lt;- trainControl(method=&quot;repeatedcv&quot;, number=2, repeats=1, selectionFunction = &quot;oneSE&quot;)
 in_train &lt;- createDataPartition(data_subset$gender, p=.80, list=FALSE)
 
-
-
-rf &lt;- train(gender ~ region + hour + phone_brand + device_model +
-              apps + Games + Education + Finance, 
+rf &lt;- train(gender ~ region + hour + phone_brand + Games + Education + Finance, 
             data = data_subset, method = &quot;rf&quot;,
-            metric = &quot;Kappa&quot;, trControl = ctrl, subset = in_train)</code></pre>
-</div>
-<div id="testing" class="section level1">
-<h1>Testing</h1>
-<pre class="r"><code>test &lt;- data_subset[-in_train,]
-test$pred_rf &lt;- predict(rf, test, &quot;raw&quot;)
-confusionMatrix(test$pred_rf, test$gender)</code></pre>
+            metric = &quot;Kappa&quot;, trControl = ctrl, subset = in_train)
+
+test &lt;- data_subset[-in_train,]
+test$pred &lt;- predict(rf, test, &quot;raw&quot;)
+confusionMatrix(test$pred, test$gender)</code></pre>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
 ## Prediction   F   M
-##          F   7  16
-##          M  40 136
-##                                           
-##                Accuracy : 0.7186          
-##                  95% CI : (0.6506, 0.7799)
-##     No Information Rate : 0.7638          
-##     P-Value [Acc &gt; NIR] : 0.941311        
-##                                           
-##                   Kappa : 0.053           
-##  Mcnemar&#39;s Test P-Value : 0.002116        
-##                                           
-##             Sensitivity : 0.14894         
-##             Specificity : 0.89474         
-##          Pos Pred Value : 0.30435         
-##          Neg Pred Value : 0.77273         
-##              Prevalence : 0.23618         
-##          Detection Rate : 0.03518         
-##    Detection Prevalence : 0.11558         
-##       Balanced Accuracy : 0.52184         
-##                                           
-##        &#39;Positive&#39; Class : F               
+##          F  10  25
+##          M  86 278
+##                                          
+##                Accuracy : 0.7218         
+##                  95% CI : (0.675, 0.7652)
+##     No Information Rate : 0.7594         
+##     P-Value [Acc &gt; NIR] : 0.9636         
+##                                          
+##                   Kappa : 0.0277         
+##  Mcnemar&#39;s Test P-Value : 1.234e-08      
+##                                          
+##             Sensitivity : 0.10417        
+##             Specificity : 0.91749        
+##          Pos Pred Value : 0.28571        
+##          Neg Pred Value : 0.76374        
+##              Prevalence : 0.24060        
+##          Detection Rate : 0.02506        
+##    Detection Prevalence : 0.08772        
+##       Balanced Accuracy : 0.51083        
+##                                          
+##        &#39;Positive&#39; Class : F              
 ## </code></pre>
-</div>
-<div id="prediction" class="section level1">
-<h1>Prediction</h1>
 <pre class="r"><code>prd &lt;- data.frame(region = &quot;Hong Kong&quot;, hour = 12, phone_brand = &quot;vivo&quot;,
-                  device_model = &quot;X5Max&quot;, apps = 4, Games = 1, Education = 1,
-                  Finance = 0)
-prediction &lt;- predict(rf, prd)
-prediction</code></pre>
+                  Games = 1, Education = 1, Finance = 0)
+predict(rf, prd)</code></pre>
 <pre><code>## [1] M
 ## Levels: F M</code></pre>
+<p>Linear model for predicting age.</p>
+<pre class="r"><code>split&lt;-createDataPartition(data_subset$age, p = 0.6, list = FALSE)
+
+dev&lt;-data_subset[split,] %&gt;%
+  select(age, region, hour, phone_brand, Games, Education,
+         Finance)
+
+val&lt;-data_subset[-split,] %&gt;%
+  select(age, region, hour, phone_brand, Games, Education,
+         Finance)
+
+ctrl&lt;-trainControl(method = &quot;cv&quot;, number = 2)
+
+lm&lt;-train(age~., data = dev, method = &quot;lm&quot;, trControl = ctrl)
+
+lm</code></pre>
+<pre><code>## Linear Regression 
+## 
+## 1201 samples
+##    6 predictor
+## 
+## No pre-processing
+## Resampling: Cross-Validated (2 fold) 
+## Summary of sample sizes: 600, 601 
+## Resampling results:
+## 
+##   RMSE      Rsquared  
+##   9.343944  0.02952697
+## 
+## </code></pre>
+<pre class="r"><code>predict(lm, prd)</code></pre>
+<pre><code>##        1 
+## 29.96926</code></pre>
+</div>
+<div id="application" class="section level1">
+<h1>Application</h1>
+<p>The models can be used to make a prediction of the users gender and age. Below is an application that gives an estimated age and gender based on the user inputs.</p>
 </div>
 
 

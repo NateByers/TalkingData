@@ -7,3 +7,6 @@ rmarkdown
 printr
 plotly
 tidyr
+lattice
+caret
+randomForest

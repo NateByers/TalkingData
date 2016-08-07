@@ -136,9 +136,11 @@ d <- full_data %>%
 ggcorr(d, geom = "circle", nbreaks = 5)
 ```
 
-# Model Building
+# Prediction
 
-```{r, warning=FALSE, message=FALSE}
+Random forest model for predicting gender.
+
+```{r, warning=FALSE, message=FALSE, cache=TRUE}
 library(caret)
 for(i in names(full_data)){
   if(class(full_data[[i]]) == "character"){
@@ -148,35 +150,54 @@ for(i in names(full_data)){
 
 data_subset <- full_data %>%
   arrange(gender) %>%
-  sample_n(1000)
+  sample_n(2000)
 
 ctrl <- trainControl(method="repeatedcv", number=2, repeats=1, selectionFunction = "oneSE")
 in_train <- createDataPartition(data_subset$gender, p=.80, list=FALSE)
 
-
-
-rf <- train(gender ~ region + hour + phone_brand + device_model +
-              apps + Games + Education + Finance, 
+rf <- train(gender ~ region + hour + phone_brand + Games + Education + Finance, 
             data = data_subset, method = "rf",
             metric = "Kappa", trControl = ctrl, subset = in_train)
 
-```
-
-# Testing
-
-```{r}
 test <- data_subset[-in_train,]
-test$pred_rf <- predict(rf, test, "raw")
-confusionMatrix(test$pred_rf, test$gender)
-```
-
-# Prediction
-
-```{r}
+test$pred <- predict(rf, test, "raw")
+confusionMatrix(test$pred, test$gender)
 
 prd <- data.frame(region = "Hong Kong", hour = 12, phone_brand = "vivo",
-                  device_model = "X5Max", apps = 4, Games = 1, Education = 1,
-                  Finance = 0)
-prediction <- predict(rf, prd)
-prediction
+                  Games = 1, Education = 1, Finance = 0)
+predict(rf, prd)
+
 ```
+
+Linear model for predicting age.
+
+```{r, warning=FALSE, message=FALSE, cache=TRUE}
+split<-createDataPartition(data_subset$age, p = 0.6, list = FALSE)
+
+dev<-data_subset[split,] %>%
+  select(age, region, hour, phone_brand, Games, Education,
+         Finance)
+
+val<-data_subset[-split,] %>%
+  select(age, region, hour, phone_brand, Games, Education,
+         Finance)
+
+ctrl<-trainControl(method = "cv", number = 2)
+
+lm<-train(age~., data = dev, method = "lm", trControl = ctrl)
+
+lm
+
+predict(lm, prd)
+
+```
+
+```{r, echo=FALSE, warning=FALSE}
+save(rf, lm, file = "D:/Repositories/TalkingData_Prediction/data/models.rda")
+```
+# Application
+
+The models can be used to make a prediction of the users gender and age. Below is
+an application that gives an estimated age and gender based on the user inputs.
+
+
