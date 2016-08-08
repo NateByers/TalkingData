@@ -1,6 +1,6 @@
 library(dplyr)
 library(tidyr)
-directory <- "D:/Repositories/TalkingData/"
+directory <- "C:/Repositories/TalkingData/TalkingData/"
 source(paste0(directory, "makeRegions.R"))
 source(paste0(directory, "generalizeCategories.R"))
 app_events <- read.csv(paste0(directory, "data/app_events.csv"),

@@ -313,41 +313,175 @@ div.tocify {
 <p>This project uses data from the <a href="https://www.kaggle.com/c/talkingdata-mobile-user-demographics">TalkingData Mobile User Demographics</a> Kaggle competition.</p>
 <p>TalkingData is a Chinese based mobile data platform. From the competition site:</p>
 <blockquote>
-<p>In this competition, Kagglers are challenged to build a model predicting users’ demographic characteristics based on their app usage, geolocation, and mobile device properties. Doing so will help millions of developers and brand advertisers around the world pursue data-driven marketing efforts which are relevant to their users and catered to their preferences.</p>
+<p>In this competition, Kagglers are challenged to build a model predicting usersâ€™ demographic characteristics based on their app usage, geolocation, and mobile device properties. Doing so will help millions of developers and brand advertisers around the world pursue data-driven marketing efforts which are relevant to their users and catered to their preferences.</p>
 </blockquote>
 <div id="the-data" class="section level1">
 <h1>The Data</h1>
 <p>The data for the competition can be downloaded here: <a href="https://www.kaggle.com/c/talkingdata-mobile-user-demographics/data" class="uri">https://www.kaggle.com/c/talkingdata-mobile-user-demographics/data</a> .</p>
 <p>I have downloaded and read each file into R, giving each <code>data.frame</code> the same name as the file. Below are the first 3 records of each file.</p>
 <pre class="r"><code>head(app_events, 3)</code></pre>
-<pre><code>##   event_id       app_id is_installed is_active
-## 1  1924946 3.489720e+18            1         1
-## 2    19620 7.723979e+18            1         1
-## 3    53629 7.723979e+18            1         1</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">event_id</th>
+<th align="right">app_id</th>
+<th align="right">is_installed</th>
+<th align="right">is_active</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1924946</td>
+<td align="right">3.489720e+18</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="right">19620</td>
+<td align="right">7.723979e+18</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="right">53629</td>
+<td align="right">7.723979e+18</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>head(app_labels, 3)</code></pre>
-<pre><code>##          app_id label_id
-## 1 -2.600988e+18        2
-## 2 -2.600988e+18        4
-## 3  4.214070e+18        5</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">app_id</th>
+<th align="right">label_id</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">-2.600988e+18</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="right">-2.600988e+18</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="right">4.214070e+18</td>
+<td align="right">5</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>head(events, 3)</code></pre>
-<pre><code>##   event_id     device_id           timestamp longitude latitude region
-## 1  1924946 -7.013555e+18 2016-05-06 07:39:53    109.46    21.89   &lt;NA&gt;
-## 2    19620  8.427965e+18 2016-05-07 17:38:53    117.35    25.34   &lt;NA&gt;
-## 3    53629 -6.506152e+18 2016-05-03 18:55:04      0.00     0.00   &lt;NA&gt;
-##         date hour    time
-## 1 2016-05-06    7 morning
-## 2 2016-05-07   17  midday
-## 3 2016-05-03   18 evening</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">event_id</th>
+<th align="right">device_id</th>
+<th align="left">timestamp</th>
+<th align="right">longitude</th>
+<th align="right">latitude</th>
+<th align="left">region</th>
+<th align="left">date</th>
+<th align="right">hour</th>
+<th align="left">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1924946</td>
+<td align="right">-7.013555e+18</td>
+<td align="left">2016-05-06 07:39:53</td>
+<td align="right">109.46</td>
+<td align="right">21.89</td>
+<td align="left">NA</td>
+<td align="left">2016-05-06</td>
+<td align="right">7</td>
+<td align="left">morning</td>
+</tr>
+<tr class="even">
+<td align="right">19620</td>
+<td align="right">8.427965e+18</td>
+<td align="left">2016-05-07 17:38:53</td>
+<td align="right">117.35</td>
+<td align="right">25.34</td>
+<td align="left">NA</td>
+<td align="left">2016-05-07</td>
+<td align="right">17</td>
+<td align="left">midday</td>
+</tr>
+<tr class="odd">
+<td align="right">53629</td>
+<td align="right">-6.506152e+18</td>
+<td align="left">2016-05-03 18:55:04</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="left">NA</td>
+<td align="left">2016-05-03</td>
+<td align="right">18</td>
+<td align="left">evening</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>head(gender_age_train, 3)</code></pre>
-<pre><code>##       device_id gender age  group
-## 1  8.427965e+18      F  23   F23-
-## 2 -3.293695e+18      M  40   M39+
-## 3  7.104535e+18      M  25 M23-26</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">device_id</th>
+<th align="left">gender</th>
+<th align="right">age</th>
+<th align="left">group</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">8.427965e+18</td>
+<td align="left">F</td>
+<td align="right">23</td>
+<td align="left">F23-</td>
+</tr>
+<tr class="even">
+<td align="right">-3.293695e+18</td>
+<td align="left">M</td>
+<td align="right">40</td>
+<td align="left">M39+</td>
+</tr>
+<tr class="odd">
+<td align="right">7.104535e+18</td>
+<td align="left">M</td>
+<td align="right">25</td>
+<td align="left">M23-26</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>head(phone_brand_device_model, 3) # Chinese characters displayed in UTF-8 codes</code></pre>
-<pre><code>##      device_id      phone_brand      device_model
-## 1 8.427965e+18             vivo               X5M
-## 2 1.186608e+18 &lt;U+5C0F&gt;&lt;U+7C73&gt; &lt;U+7EA2&gt;&lt;U+7C73&gt;2
-## 3 1.186608e+18 &lt;U+5C0F&gt;&lt;U+7C73&gt;  &lt;U+7EA2&gt;&lt;U+7C73&gt;</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">device_id</th>
+<th align="left">phone_brand</th>
+<th align="left">device_model</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">8.427965e+18</td>
+<td align="left">vivo</td>
+<td align="left">X5M</td>
+</tr>
+<tr class="even">
+<td align="right">1.186608e+18</td>
+<td align="left"><U+5C0F><U+7C73></td>
+<td align="left"><U+7EA2><U+7C73>2</td>
+</tr>
+<tr class="odd">
+<td align="right">1.186608e+18</td>
+<td align="left"><U+5C0F><U+7C73></td>
+<td align="left"><U+7EA2><U+7C73></td>
+</tr>
+</tbody>
+</table>
 <p><br><br></p>
 <p>The number of records in each <code>data.frame</code> can be seen in the table below.</p>
 <p><br><br></p>
@@ -385,7 +519,7 @@ div.tocify {
 <p>And below is the data schema provided on the Kaggle site.</p>
 <p><br><br></p>
 <div class="figure">
-<img src="img/schema.png" />
+<img src="img/schema.png" alt="" />
 
 </div>
 <p><br><br></p>

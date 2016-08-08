@@ -193,7 +193,7 @@ predict(lm, prd)
 ```
 
 ```{r, echo=FALSE, warning=FALSE}
-save(rf, lm, file = "D:/Repositories/TalkingData_Prediction/data/models.rda")
+save(rf, lm, file = "C:/Repositories/TalkingData_Prediction/data/models.rda")
 ```
 # Application
 
