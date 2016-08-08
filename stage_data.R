@@ -1,6 +1,6 @@
 library(dplyr)
 library(tidyr)
-directory <- "D:/Repositories/TalkingData/"
+directory <- "D:/Repositories/TalkingData"
 explorer <- "D:/Repositories/TalkingData_Explorer/data/prepped_data.rda"
 load(paste0(directory, "data/data.rda"))
 
