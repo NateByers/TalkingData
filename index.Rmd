@@ -76,6 +76,8 @@ are rendered as their UTF-8 code or sometimes not at all.
 The tidy data set can be visualized using the TalkingData Explorer found here: 
 https://natebyers.shinyapps.io/TalkingData_Explorer/ .
 
+Below are plots that vizualize the distribution of gender and age.
+
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=FALSE}
 library(ggplot2)
 library(GGally)
@@ -90,6 +92,8 @@ load("data/prepped_data.rda")
 
 
 ```
+
+
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 d <- full_data %>%
@@ -128,14 +132,6 @@ ggplot(full_data, aes(factor(region), age)) +
 
 ```
 
-```{r, echo=FALSE}
-d <- full_data %>%
-  mutate(location = longitude*latitude) %>%
-  select(age, location, hour, Custom:Other)
-
-ggcorr(d, geom = "circle", nbreaks = 5)
-```
-
 # Prediction
 
 Random forest model for predicting gender.
@@ -148,18 +144,19 @@ for(i in names(full_data)){
   }
 }
 
-data_subset <- full_data %>%
+gender_subset <- full_data %>%
   arrange(gender) %>%
-  sample_n(2000)
+  sample_n(2000) %>%
+  select(gender, region, hour, phone_brand, Games, Education, Finance)
 
-ctrl <- trainControl(method="repeatedcv", number=2, repeats=1, selectionFunction = "oneSE")
-in_train <- createDataPartition(data_subset$gender, p=.80, list=FALSE)
+ctrl <- trainControl(method="repeatedcv", number=2, repeats=1, 
+                     selectionFunction = "oneSE")
+in_train <- createDataPartition(gender_subset$gender, p=.80, list=FALSE)
 
-rf <- train(gender ~ region + hour + phone_brand + Games + Education + Finance, 
-            data = data_subset, method = "rf",
+rf <- train(gender ~ ., data = gender_subset, method = "rf",
             metric = "Kappa", trControl = ctrl, subset = in_train)
 
-test <- data_subset[-in_train,]
+test <- gender_subset[-in_train,]
 test$pred <- predict(rf, test, "raw")
 confusionMatrix(test$pred, test$gender)
 
@@ -172,13 +169,17 @@ predict(rf, prd)
 Linear model for predicting age.
 
 ```{r, warning=FALSE, message=FALSE, cache=TRUE}
-split<-createDataPartition(data_subset$age, p = 0.6, list = FALSE)
+age_subset <- full_data %>%
+  arrange(age) %>%
+  sample_n(2000)
 
-dev<-data_subset[split,] %>%
+split<-createDataPartition(age_subset$age, p = 0.6, list = FALSE)
+
+dev<-age_subset[split,] %>%
   select(age, region, hour, phone_brand, Games, Education,
          Finance)
 
-val<-data_subset[-split,] %>%
+val<-age_subset[-split,] %>%
   select(age, region, hour, phone_brand, Games, Education,
          Finance)
 
@@ -192,7 +193,7 @@ predict(lm, prd)
 
 ```
 
-```{r, echo=FALSE, warning=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 save(rf, lm, file = "C:/Repositories/TalkingData_Prediction/data/models.rda")
 ```
 # Application
@@ -200,4 +201,4 @@ save(rf, lm, file = "C:/Repositories/TalkingData_Prediction/data/models.rda")
 The models can be used to make a prediction of the users gender and age. Below is
 an application that gives an estimated age and gender based on the user inputs.
 
-
+<iframe src="https://natebyers.shinyapps.io/TalkingData_Prediction/" style="border: none; width: 440px; height: 900px"></iframe>

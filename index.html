@@ -288,6 +288,7 @@ div.tocify {
     Data Table
   </a>
 </li>
+<li class="dropdown-header">Application</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -578,10 +579,10 @@ div.tocify {
 <div id="data-exploration" class="section level1">
 <h1>Data Exploration</h1>
 <p>The tidy data set can be visualized using the TalkingData Explorer found here: <a href="https://natebyers.shinyapps.io/TalkingData_Explorer/" class="uri">https://natebyers.shinyapps.io/TalkingData_Explorer/</a> .</p>
+<p>Below are plots that vizualize the distribution of gender and age.</p>
 <p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
-<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="prediction" class="section level1">
 <h1>Prediction</h1>
@@ -593,45 +594,46 @@ for(i in names(full_data)){
   }
 }
 
-data_subset &lt;- full_data %&gt;%
+gender_subset &lt;- full_data %&gt;%
   arrange(gender) %&gt;%
-  sample_n(2000)
+  sample_n(2000) %&gt;%
+  select(gender, region, hour, phone_brand, Games, Education, Finance)
 
-ctrl &lt;- trainControl(method=&quot;repeatedcv&quot;, number=2, repeats=1, selectionFunction = &quot;oneSE&quot;)
-in_train &lt;- createDataPartition(data_subset$gender, p=.80, list=FALSE)
+ctrl &lt;- trainControl(method=&quot;repeatedcv&quot;, number=2, repeats=1, 
+                     selectionFunction = &quot;oneSE&quot;)
+in_train &lt;- createDataPartition(gender_subset$gender, p=.80, list=FALSE)
 
-rf &lt;- train(gender ~ region + hour + phone_brand + Games + Education + Finance, 
-            data = data_subset, method = &quot;rf&quot;,
+rf &lt;- train(gender ~ ., data = gender_subset, method = &quot;rf&quot;,
             metric = &quot;Kappa&quot;, trControl = ctrl, subset = in_train)
 
-test &lt;- data_subset[-in_train,]
+test &lt;- gender_subset[-in_train,]
 test$pred &lt;- predict(rf, test, &quot;raw&quot;)
 confusionMatrix(test$pred, test$gender)</code></pre>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
 ## Prediction   F   M
-##          F  10  25
-##          M  86 278
-##                                          
-##                Accuracy : 0.7218         
-##                  95% CI : (0.675, 0.7652)
-##     No Information Rate : 0.7594         
-##     P-Value [Acc &gt; NIR] : 0.9636         
-##                                          
-##                   Kappa : 0.0277         
-##  Mcnemar&#39;s Test P-Value : 1.234e-08      
-##                                          
-##             Sensitivity : 0.10417        
-##             Specificity : 0.91749        
-##          Pos Pred Value : 0.28571        
-##          Neg Pred Value : 0.76374        
-##              Prevalence : 0.24060        
-##          Detection Rate : 0.02506        
-##    Detection Prevalence : 0.08772        
-##       Balanced Accuracy : 0.51083        
-##                                          
-##        &#39;Positive&#39; Class : F              
+##          F  10  19
+##          M  90 280
+##                                         
+##                Accuracy : 0.7268        
+##                  95% CI : (0.6803, 0.77)
+##     No Information Rate : 0.7494        
+##     P-Value [Acc &gt; NIR] : 0.8634        
+##                                         
+##                   Kappa : 0.0477        
+##  Mcnemar&#39;s Test P-Value : 2.017e-11     
+##                                         
+##             Sensitivity : 0.10000       
+##             Specificity : 0.93645       
+##          Pos Pred Value : 0.34483       
+##          Neg Pred Value : 0.75676       
+##              Prevalence : 0.25063       
+##          Detection Rate : 0.02506       
+##    Detection Prevalence : 0.07268       
+##       Balanced Accuracy : 0.51823       
+##                                         
+##        &#39;Positive&#39; Class : F             
 ## </code></pre>
 <pre class="r"><code>prd &lt;- data.frame(region = &quot;Hong Kong&quot;, hour = 12, phone_brand = &quot;vivo&quot;,
                   Games = 1, Education = 1, Finance = 0)
@@ -639,13 +641,17 @@ predict(rf, prd)</code></pre>
 <pre><code>## [1] M
 ## Levels: F M</code></pre>
 <p>Linear model for predicting age.</p>
-<pre class="r"><code>split&lt;-createDataPartition(data_subset$age, p = 0.6, list = FALSE)
+<pre class="r"><code>age_subset &lt;- full_data %&gt;%
+  arrange(age) %&gt;%
+  sample_n(2000)
 
-dev&lt;-data_subset[split,] %&gt;%
+split&lt;-createDataPartition(age_subset$age, p = 0.6, list = FALSE)
+
+dev&lt;-age_subset[split,] %&gt;%
   select(age, region, hour, phone_brand, Games, Education,
          Finance)
 
-val&lt;-data_subset[-split,] %&gt;%
+val&lt;-age_subset[-split,] %&gt;%
   select(age, region, hour, phone_brand, Games, Education,
          Finance)
 
@@ -656,25 +662,27 @@ lm&lt;-train(age~., data = dev, method = &quot;lm&quot;, trControl = ctrl)
 lm</code></pre>
 <pre><code>## Linear Regression 
 ## 
-## 1201 samples
+## 1202 samples
 ##    6 predictor
 ## 
 ## No pre-processing
 ## Resampling: Cross-Validated (2 fold) 
-## Summary of sample sizes: 600, 601 
+## Summary of sample sizes: 602, 600 
 ## Resampling results:
 ## 
 ##   RMSE      Rsquared  
-##   9.343944  0.02952697
+##   9.129228  0.03066149
 ## 
 ## </code></pre>
 <pre class="r"><code>predict(lm, prd)</code></pre>
 <pre><code>##        1 
-## 29.96926</code></pre>
+## 27.83763</code></pre>
 </div>
 <div id="application" class="section level1">
 <h1>Application</h1>
 <p>The models can be used to make a prediction of the users gender and age. Below is an application that gives an estimated age and gender based on the user inputs.</p>
+<iframe src="https://natebyers.shinyapps.io/TalkingData_Prediction/" style="border: none; width: 440px; height: 900px">
+</iframe>
 </div>
 
 
