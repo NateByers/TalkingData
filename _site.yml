@@ -12,6 +12,7 @@ navbar:
       href: table.html
     - text: "Application"
       icon: fa-tachometer
+      href: Application.html
   right:
     - icon: fa-github fa-lg
       href: https://github.com/NateByers/TalkingData

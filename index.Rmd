@@ -76,7 +76,7 @@ are rendered as their UTF-8 code or sometimes not at all.
 The tidy data set can be visualized using the TalkingData Explorer found here: 
 https://natebyers.shinyapps.io/TalkingData_Explorer/ .
 
-Below are plots that vizualize the distribution of gender and age.
+Below are plots that visualize the distribution of gender and age.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, cache=FALSE}
 library(ggplot2)
